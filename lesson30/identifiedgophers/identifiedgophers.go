@@ -21,8 +21,8 @@ func main() {
 }
 
 func sleepyGopher(id int) {
-	sleepSecond := rand.Intn(3)
+	sleepSecond := rand.Intn(4)
+	fmt.Println("... ", id, "snore ...", "sleep", sleepSecond)
 	time.Sleep(time.Duration(sleepSecond) * time.Second)
-	fmt.Println("... ", id, " snore ...", "sleep", sleepSecond)
 	wg.Done()
 }
