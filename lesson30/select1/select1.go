@@ -7,13 +7,15 @@ import (
 	"time"
 )
 
-var wg = sync.WaitGroup{}
+// var waitGroup = sync.WaitGroup{}
+var finishedCounter = 0
+var mutex = sync.RWMutex{}
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	ch := make(chan int, 10)
 	for i := 0; i < 10; i++ {
-		wg.Add(1)
+		// waitGroup.Add(1)
 		go sleepyGopher(i, ch)
 	}
 
@@ -23,12 +25,18 @@ func main() {
 		select {
 		case gopherID := <-ch:
 			fmt.Println("gopher", gopherID, "has finished sleeping")
+			mutex.Lock()
+			finishedCounter++
+			mutex.Unlock()
 		case <-timeout:
-			fmt.Printf("my patience ran out within %d seconds\n", timeOutSecond)
+			fmt.Printf("My patience ran out within %d seconds\n", timeOutSecond)
+			mutex.RLock()
+			fmt.Printf("# of finished gopher is %d \n", finishedCounter)
+			mutex.RUnlock()
 			return
 		}
 	}
-	wg.Wait()
+	// waitGroup.Wait()
 }
 func sleepyGopher(id int, ch chan<- int) {
 	sleepDuration := rand.Intn(4000)
@@ -36,5 +44,5 @@ func sleepyGopher(id int, ch chan<- int) {
 
 	time.Sleep(time.Duration(sleepDuration) * time.Millisecond)
 	ch <- id
-	wg.Done()
+	// waitGroup.Done()
 }

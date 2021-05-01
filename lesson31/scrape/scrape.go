@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 // Visited tracks whether web pages have been visited.
 // Its methods may be used concurrently with one another.
@@ -13,8 +16,12 @@ type Visited struct {
 // VisitLink tracks that the page with the given URL has
 // been visited, and returns the updated link count.
 func (v *Visited) VisitLink(url string) int {
-	v.mu.Lock()
 	defer v.mu.Unlock()
+
+	v.mu.Lock()
+	if v.visited == nil {
+		v.visited = map[string]int{}
+	}
 	count := v.visited[url]
 	count++
 	v.visited[url] = count
@@ -22,4 +29,17 @@ func (v *Visited) VisitLink(url string) int {
 }
 
 func main() {
+	// var visited Visited = Visited{mu: sync.Mutex{}, visited: map[string]int{}}
+	visited := Visited{mu: sync.Mutex{}, visited: map[string]int{}}
+	fmt.Printf("%+v\n", visited.visited)
+	visited.VisitLink("https://gopl.io")
+	fmt.Printf("%+v\n", visited.visited)
+	visited.VisitLink("https://https://golang.org/")
+	fmt.Printf("%+v\n", visited.visited)
+	visited.VisitLink("https://gopl.io")
+	fmt.Printf("%+v\n", visited.visited)
+	visited.VisitLink("https://gopl.io")
+	fmt.Printf("%+v\n", visited.visited)
+	visited.VisitLink("https://https://golang.org/")
+	fmt.Printf("%+v\n", visited.visited)
 }

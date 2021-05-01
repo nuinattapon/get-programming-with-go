@@ -6,19 +6,19 @@ import (
 )
 
 func main() {
-	c0 := make(chan string)
-	c1 := make(chan string)
-	go sourceGopher(c0)
-	go filterGopher(c0, c1)
-	printGopher(c1)
+	ch0 := make(chan string)
+	ch1 := make(chan string)
+	go sourceGopher(ch0)
+	go filterGopher(ch0, ch1)
+	printGopher(ch1)
 }
-func sourceGopher(downstream chan string) {
-	for _, v := range []string{"hello world", "a bad apple", "goodbye all"} {
+func sourceGopher(downstream chan<- string) {
+	for _, v := range []string{"hello world", "a bad apple", "hi there", "how r u?", "goodbye all"} {
 		downstream <- v
 	}
 	close(downstream)
 }
-func filterGopher(upstream, downstream chan string) {
+func filterGopher(upstream <-chan string, downstream chan<- string) {
 	for item := range upstream {
 		if !strings.Contains(item, "bad") {
 			downstream <- item
@@ -26,7 +26,7 @@ func filterGopher(upstream, downstream chan string) {
 	}
 	close(downstream)
 }
-func printGopher(upstream chan string) {
+func printGopher(upstream <-chan string) {
 	for v := range upstream {
 		fmt.Println(v)
 	}
