@@ -25,10 +25,10 @@ func main() {
 }
 
 func sleepyGopher(id int, ch chan<- int) {
-	sleepSecond := rand.Intn(4)
-	fmt.Println("... ", id, "snore ...", "sleep", sleepSecond)
+	sleepDuration := rand.Intn(4000)
+	fmt.Println("... ", id, "snore ...", "sleep", sleepDuration)
 
-	time.Sleep(time.Duration(sleepSecond) * time.Second)
+	time.Sleep(time.Duration(sleepDuration) * time.Millisecond)
 	// fmt.Println("... ", id, " snore ...")
 	ch <- id
 	wg.Done()
